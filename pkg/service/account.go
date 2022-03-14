@@ -39,10 +39,10 @@ func (a *Account) UpdateLimit(ctx context.Context, account *entity.Account, amou
 			return ErrLimitExceeded
 		}
 
-		account.Limit = account.Limit - amount
+		account.Limit -= amount
 		return a.AccountRepository.UpdateLimit(ctx, account)
 	}
 
-	account.Limit = account.Limit + amount
+	account.Limit += amount
 	return a.AccountRepository.UpdateLimit(ctx, account)
 }
