@@ -70,10 +70,7 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 	})
 
 	if err != nil {
-		if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, false); err != nil {
-			t.Logger.Warnf("t.AccountService.UpdateLimit failed with %s\n", err)
-		}
-
+		_ = t.AccountService.UpdateLimit(ctx, account, request.Amount, false)
 		t.Logger.Errorf("t.TransactionRepository.Create failed with %s\n", err)
 		return nil, err
 	}
