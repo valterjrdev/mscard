@@ -124,7 +124,7 @@ func TestServiceTransaction_Create_Persist_Account_NotFound_Error(t *testing.T) 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
 		Account: 1,
 		Type:    1,
-		Amount:  100.00,
+		Amount:  1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, repository.ErrAccountCreateNotFound.Error())
