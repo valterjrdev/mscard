@@ -30,3 +30,7 @@ coverage:
 .PHONY:run
 run:
 	@docker-compose up --build
+
+.PHONY:seeds
+seeds:
+	@exec scripts/seeds.sh
