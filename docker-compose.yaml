@@ -21,8 +21,6 @@ services:
         condition: service_healthy
   database:
     image: "postgres:14-alpine3.15"
-    env_file:
-      - .env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
@@ -31,6 +29,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: ${APP_DB_USER}
-      POSTGRES_PASSWORD: ${APP_DB_PASS}
-      POSTGRES_DB: ${APP_DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: card

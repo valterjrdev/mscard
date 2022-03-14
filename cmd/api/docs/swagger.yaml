@@ -1,0 +1,345 @@
+swagger: "2.0"
+info:
+  version: "0.0.0"
+  title: "ms card"
+  description: "Card transaction authorizer"
+paths:
+  /accounts:
+    post:
+      tags:
+        - "accounts"
+      summary: "Add a new account"
+      description: ""
+      operationId: "Account Create"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/AccountCreate"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+    get:
+      tags:
+        - "accounts"
+      summary: "Get all aaccounts"
+      description: ""
+      operationId: "AccountCollection"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: size
+          schema:
+            type: integer
+        - in: query
+          name: document_number
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: array
+            $ref: "#/definitions/Account"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /accounts/{id}:
+    get:
+      tags:
+        - "accounts"
+      summary: "Get api by id"
+      description: ""
+      operationId: "getAccountByID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /transactions:
+    post:
+      tags:
+        - "transactions"
+      summary: "Add a new transaction"
+      description: ""
+      operationId: "createTransaction"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/TransactionCreate"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Transaction"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+    get:
+      tags:
+        - "transactions"
+      summary: "Get all transactions"
+      description: ""
+      operationId: "getAccountByID"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: size
+          schema:
+            type: integer
+
+        - in: query
+          name: account_id
+          schema:
+            type: string
+        - in: query
+          name: operation_type_id
+          schema:
+            type: string
+        - in: query
+          name: eventDateStart
+          schema:
+            type: string
+        - in: query
+          name: eventDateEnd
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: array
+            $ref: "#/definitions/TransactionCollection"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /operation-types:
+    post:
+      tags:
+        - "operationType"
+      summary: "Add a new operation type"
+      description: ""
+      operationId: "OperationTypeCreate"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/OperationTypeCreate"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/OperationType"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+    get:
+      tags:
+        - "operationType"
+      summary: "Get all operation types"
+      description: ""
+      operationId: "OperationTypeCollection"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: size
+          schema:
+            type: integer
+        - in: query
+          name: description
+          schema:
+            type: string
+        - in: query
+          name: negative
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: array
+            $ref: "#/definitions/OperationType"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+  /operation-types/{id}:
+    get:
+      tags:
+        - "operationType"
+      summary: "Get operation type by id"
+      description: ""
+      operationId: "OperationTypeFindByID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/OperationType"
+        "400":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: "Error"
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  Error:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+  Account:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "uint"
+      document_number:
+        type: "string"
+  AccountCreate:
+    type: "object"
+    properties:
+      document_number:
+        type: "string"
+  Transaction:
+    type: "object"
+    properties:
+      account_id:
+        type: "integer"
+        format: "uint"
+      operation_type_id:
+        type: "integer"
+        format: "uint"
+      amount:
+        type: "number"
+        format: "float64"
+      event_date:
+        type: "string"
+  TransactionCollection:
+    type: "object"
+    properties:
+      total:
+        type: "number"
+        format: "float64"
+      transactions:
+        type: "array"
+        $ref: "#/definitions/Transaction"
+  TransactionCreate:
+    type: "object"
+    properties:
+      account_id:
+        type: "integer"
+        format: "uint"
+      operation_type_id:
+        type: "integer"
+        format: "uint"
+      amount:
+        type: "number"
+        format: "int64"
+  OperationType:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "uint"
+      description:
+        type: "string"
+      negative:
+        type: "string"
+
+  OperationTypeCreate:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+      negative:
+        type: "string"
