@@ -33,7 +33,7 @@ func TestServiceTransaction_Create(t *testing.T) {
 		ID:      1,
 		Account: 1,
 		Type:    1,
-		Amount:  100.00,
+		Amount:  1000,
 	}, nil)
 
 	transactionService := NewTransaction(TransactionOpts{
@@ -45,7 +45,7 @@ func TestServiceTransaction_Create(t *testing.T) {
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
 		Account: 1,
 		Type:    1,
-		Amount:  100.00,
+		Amount:  1000,
 	})
 	assert.NotNil(t, transaction)
 	assert.Nil(t, err)
@@ -100,7 +100,7 @@ func TestServiceTransaction_Create_Persist_Error(t *testing.T) {
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
 		Account: 1,
 		Type:    1,
-		Amount:  100.00,
+		Amount:  1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, repository.ErrTransactionCreate.Error())
@@ -155,7 +155,7 @@ func TestServiceTransaction_Create_Persist_OperationType_NotFound_Error(t *testi
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
 		Account: 1,
 		Type:    1,
-		Amount:  100.00,
+		Amount:  1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, repository.ErrOperationTypeCreateNotFound.Error())
