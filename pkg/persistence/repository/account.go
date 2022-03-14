@@ -26,6 +26,7 @@ const (
 type (
 	Accounts interface {
 		Create(ctx context.Context, structure entity.Account) (*entity.Account, error)
+		UpdateLimit(ctx context.Context, structure *entity.Account) error
 		FindByID(ctx context.Context, id uint) (*entity.Account, error)
 		FindAll(ctx context.Context, filters filter.AccountCollection) ([]*entity.Account, error)
 	}
@@ -62,7 +63,7 @@ func (a *Account) FindByID(ctx context.Context, id uint) (*entity.Account, error
 	var account entity.Account
 
 	tx := a.adapter.WithContext(ctx)
-	if result := tx.Select([]string{"id", "document_number"}).First(&account, id); result.Error != nil {
+	if result := tx.Select([]string{"id", "document_number", "limit"}).First(&account, id); result.Error != nil {
 		a.logger.Errorf("tx.First() failed with %s\n", result.Error)
 		if xerrors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrAccountCreateNotFound
@@ -80,7 +81,17 @@ func (a *Account) FindAll(ctx context.Context, filters filter.AccountCollection)
 	find := tx.Scopes(filters.Filter(), persistence.Paginator(filters.Page, filters.Size)).Select([]string{
 		"id",
 		"document_number",
+		"limit",
 	}).Find(&accounts)
 
 	return accounts, find.Error
+}
+
+func (a *Account) UpdateLimit(ctx context.Context, structure *entity.Account) error {
+	tx := a.adapter.WithContext(ctx)
+	if err := tx.Save(structure); err.Error != nil {
+		return err.Error
+	}
+
+	return nil
 }

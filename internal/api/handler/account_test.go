@@ -22,6 +22,7 @@ func TestHandlerAccount_Create(t *testing.T) {
 	mockAccountRepository.EXPECT().Create(gomock.Any(), gomock.Any()).Return(&entity.Account{
 		ID:       1,
 		Document: "56077053074",
+		Limit:    2000,
 	}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, AccountCreatePath, strings.NewReader(`{"document_number":"56077053074"}`))
@@ -33,7 +34,7 @@ func TestHandlerAccount_Create(t *testing.T) {
 
 	if assert.NoError(t, h.Create(echo.New().NewContext(req, rec))) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.JSONEq(t, `{"id":1,"document_number":"56077053074"}`, rec.Body.String())
+		assert.JSONEq(t, `{"id":1,"document_number":"56077053074","limit":2000}`, rec.Body.String())
 	}
 }
 
@@ -85,6 +86,7 @@ func TestHandlerAccount_FindByID(t *testing.T) {
 	mockAccountRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.Account{
 		ID:       1,
 		Document: "56077053074",
+		Limit:    2000,
 	}, nil)
 
 	server := echo.New()
@@ -102,7 +104,7 @@ func TestHandlerAccount_FindByID(t *testing.T) {
 
 	if assert.NoError(t, h.FindByID(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.JSONEq(t, `{"id":1,"document_number":"56077053074"}`, rec.Body.String())
+		assert.JSONEq(t, `{"id":1,"document_number":"56077053074","limit":2000}`, rec.Body.String())
 	}
 }
 
@@ -138,10 +140,12 @@ func TestHandlerAccount_FindAll(t *testing.T) {
 		{
 			ID:       1,
 			Document: "56077053074",
+			Limit:    2000,
 		},
 		{
 			ID:       2,
 			Document: "87756158008",
+			Limit:    3000,
 		},
 	}, nil)
 
@@ -158,8 +162,8 @@ func TestHandlerAccount_FindAll(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.JSONEq(t, `
 		[
-			{"id":1,"document_number":"56077053074"},
-			{"id":2,"document_number":"87756158008"}
+			{"id":1,"document_number":"56077053074","limit":2000},
+			{"id":2,"document_number":"87756158008","limit":3000}
 		]
 		`, rec.Body.String())
 	}

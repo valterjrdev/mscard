@@ -27,5 +27,4 @@ func TestIntToNegative(t *testing.T) {
 			assert.Equal(t, tt.expected, Abs(tt.input))
 		})
 	}
-
 }

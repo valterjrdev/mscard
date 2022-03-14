@@ -43,6 +43,7 @@ func (a *Account) Create(c echo.Context) error {
 
 	account, err := a.AccountRepository.Create(c.Request().Context(), entity.Account{
 		Document: request.Document,
+		Limit:    request.Limit,
 	})
 	if err != nil {
 		c.Logger().Errorf("a.AccountRepository.Create failed with %s\n", err.Error())

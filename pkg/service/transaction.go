@@ -16,10 +16,12 @@ type (
 
 	TransactionOpts struct {
 		Logger                common.Logger
+		AccountService        Accounts
 		TransactionRepository repository.Transactions
 		AccountRepository     repository.Accounts
 		OperationType         repository.OperationTypes
 	}
+
 	Transaction struct {
 		TransactionOpts
 	}
@@ -38,7 +40,7 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
-	_, err := t.AccountRepository.FindByID(ctx, request.Account)
+	account, err := t.AccountRepository.FindByID(ctx, request.Account)
 	if err != nil {
 		t.Logger.Errorf("t.AccountRepository.FindByID failed with %s\n", err)
 		return nil, err
@@ -47,6 +49,11 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 	operationType, err := t.OperationType.FindByID(ctx, request.Type)
 	if err != nil {
 		t.Logger.Errorf("t.OperationType.FindByID failed with %s\n", err)
+		return nil, err
+	}
+
+	if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, operationType.Negative); err != nil {
+		t.Logger.Errorf("t.AccountService.UpdateLimit failed with %s\n", err)
 		return nil, err
 	}
 
@@ -63,7 +70,11 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 	})
 
 	if err != nil {
-		t.Logger.Errorf(" t.TransactionRepository.Create failed with %s\n", err)
+		if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, false); err != nil {
+			t.Logger.Warnf("t.AccountService.UpdateLimit failed with %s\n", err)
+		}
+
+		t.Logger.Errorf("t.TransactionRepository.Create failed with %s\n", err)
 		return nil, err
 	}
 

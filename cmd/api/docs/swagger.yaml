@@ -285,11 +285,15 @@ definitions:
         format: "uint"
       document_number:
         type: "string"
+      limit:
+        type: "number"
   AccountCreate:
     type: "object"
     properties:
       document_number:
         type: "string"
+      limit:
+        type: "number"
   Transaction:
     type: "object"
     properties:
@@ -301,7 +305,6 @@ definitions:
         format: "uint"
       amount:
         type: "number"
-        format: "float64"
       event_date:
         type: "string"
   TransactionCollection:

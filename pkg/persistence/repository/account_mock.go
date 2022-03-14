@@ -80,3 +80,17 @@ func (mr *MockAccountsMockRecorder) FindByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockAccounts)(nil).FindByID), ctx, id)
 }
+
+// UpdateLimit mocks base method.
+func (m *MockAccounts) UpdateLimit(ctx context.Context, structure *entity.Account) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLimit", ctx, structure)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateLimit indicates an expected call of UpdateLimit.
+func (mr *MockAccountsMockRecorder) UpdateLimit(ctx, structure interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLimit", reflect.TypeOf((*MockAccounts)(nil).UpdateLimit), ctx, structure)
+}

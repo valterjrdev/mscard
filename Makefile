@@ -9,6 +9,7 @@ mock:
 	@mockgen --package=repository --source=pkg/persistence/repository/operation_type.go --destination=pkg/persistence/repository/operation_type_mock.go OperationTypes
 	@mockgen --package=repository --source=pkg/persistence/repository/transaction.go --destination=pkg/persistence/repository/transaction_mock.go Transactions
 	@mockgen --package=service --source=pkg/service/transaction.go --destination=pkg/service/transaction_mock.go Transactions
+	@mockgen --package=service --source=pkg/service/account.go --destination=pkg/service/account_mock.go Accounts
 	@mockgen --package=common --source=pkg/common/log.go --destination=pkg/common/log_mock.go Logger
 
 .PHONY:lint

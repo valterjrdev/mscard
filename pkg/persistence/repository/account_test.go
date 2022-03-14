@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgconn"
@@ -31,10 +32,10 @@ func TestAccountRepository_Create(t *testing.T) {
 
 	dbmock.ExpectBegin()
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		INSERT INTO "account" ("document_number") 
-		VALUES ($1) 
+		INSERT INTO "account" ("document_number","limit") 
+		VALUES ($1,$2) 
 		RETURNING "id"
-	`)).WithArgs("64715245019").WillReturnRows(
+	`)).WithArgs("64715245019", int64(2000)).WillReturnRows(
 		sqlmock.NewRows([]string{"id"}).AddRow("1"),
 	)
 	dbmock.ExpectCommit()
@@ -45,9 +46,11 @@ func TestAccountRepository_Create(t *testing.T) {
 	defer cancel()
 	account, err := accountRepository.Create(ctx, entity.Account{
 		Document: "64715245019",
+		Limit:    2000,
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, uint(1), account.ID)
+	assert.Equal(t, int64(2000), account.Limit)
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -140,12 +143,12 @@ func TestAccountRepository_FindByID(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","document_number"
+		SELECT "id","document_number","limit"
 		FROM "account" 
 		WHERE "account"."id" = $1 
 		ORDER BY "account"."id" 
 		LIMIT 1
-	`)).WithArgs(uint(1)).WillReturnRows(sqlmock.NewRows([]string{"id", "document_number"}).AddRow(uint(1), "64715245019"))
+	`)).WithArgs(uint(1)).WillReturnRows(sqlmock.NewRows([]string{"id", "document_number", "limit"}).AddRow(uint(1), "64715245019", int64(2000)))
 
 	accountRepository := NewAccount(logger, gormdb)
 
@@ -157,6 +160,7 @@ func TestAccountRepository_FindByID(t *testing.T) {
 
 	assert.Equal(t, uint(1), account.ID)
 	assert.Equal(t, "64715245019", account.Document)
+	assert.Equal(t, int64(2000), account.Limit)
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -178,7 +182,7 @@ func TestAccountRepository_FindByID_Error(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","document_number"
+		SELECT "id","document_number","limit"
 		FROM "account" 
 		WHERE "account"."id" = $1 
 		ORDER BY "account"."id" 
@@ -213,7 +217,7 @@ func TestAccountRepository_FindByID_RecordNotFound_Error(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","document_number"
+		SELECT "id","document_number","limit"
 		FROM "account" 
 		WHERE "account"."id" = $1 
 		ORDER BY "account"."id" 
@@ -247,12 +251,12 @@ func TestAccountRepository_Collection(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","document_number"
+		SELECT "id","document_number","limit"
 		FROM "account"
 		LIMIT 10
-	`)).WillReturnRows(sqlmock.NewRows([]string{"id", "document_number"}).
-		AddRow(uint(1), "64715245019").
-		AddRow(uint(2), "11115245019"),
+	`)).WillReturnRows(sqlmock.NewRows([]string{"id", "document_number", "limit"}).
+		AddRow(uint(1), "64715245019", int64(2000)).
+		AddRow(uint(2), "11115245019", int64(2000)),
 	)
 
 	accountRepository := NewAccount(logger, gormdb)
@@ -262,6 +266,82 @@ func TestAccountRepository_Collection(t *testing.T) {
 	accounts, err := accountRepository.FindAll(ctx, filter.AccountCollection{})
 	assert.Len(t, accounts, 2)
 	assert.NoError(t, err)
+
+	if err := dbmock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestAccount_UpdateLimit(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	logger := common.NewMockLogger(ctrl)
+
+	mockdb, dbmock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer mockdb.Close()
+
+	gormdb, err := gorm.Open(postgres.New(postgres.Config{Conn: mockdb}), &gorm.Config{})
+	assert.NoError(t, err)
+
+	dbmock.ExpectBegin()
+	dbmock.ExpectExec(regexp.QuoteMeta(
+		`UPDATE "account" SET "document_number"=$1,"limit"=$2 WHERE "id" = $3`,
+	)).WillReturnResult(sqlmock.NewResult(1, 1))
+	dbmock.ExpectCommit()
+
+	accountRepository := NewAccount(logger, gormdb)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	accountEntity := &entity.Account{
+		ID:       1,
+		Document: "64715245019",
+		Limit:    2000,
+	}
+
+	err = accountRepository.UpdateLimit(ctx, accountEntity)
+	assert.NoError(t, err)
+	assert.Equal(t, uint(1), accountEntity.ID)
+	assert.Equal(t, int64(2000), accountEntity.Limit)
+
+	if err := dbmock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+
+}
+
+func TestAccount_UpdateLimit_Error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	logger := common.NewMockLogger(ctrl)
+
+	mockdb, dbmock, err := sqlmock.New()
+	assert.NoError(t, err)
+	defer mockdb.Close()
+
+	gormdb, err := gorm.Open(postgres.New(postgres.Config{Conn: mockdb}), &gorm.Config{})
+	assert.NoError(t, err)
+
+	errExpected := errors.New("update err")
+	dbmock.ExpectBegin()
+	dbmock.ExpectExec(regexp.QuoteMeta(`UPDATE "account" SET "document_number"=$1,"limit"=$2 WHERE "id" = $3`)).WillReturnError(errExpected)
+	dbmock.ExpectRollback()
+
+	accountRepository := NewAccount(logger, gormdb)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	accountEntity := &entity.Account{
+		ID:       1,
+		Document: "64715245019",
+		Limit:    2000,
+	}
+
+	err = accountRepository.UpdateLimit(ctx, accountEntity)
+	assert.EqualError(t, err, errExpected.Error())
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)

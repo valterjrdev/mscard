@@ -7,6 +7,7 @@ import (
 type (
 	AccountRequest struct {
 		Document string `json:"document_number"`
+		Limit    int64  `json:"limit"`
 	}
 )
 

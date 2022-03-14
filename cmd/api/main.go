@@ -58,8 +58,13 @@ func main() {
 	operationTypeRepository := repository.NewOperationType(server.Logger, db)
 	transactionRepository := repository.NewTransaction(server.Logger, db)
 
+	accountService := service.NewAccount(service.AccountOpts{
+		AccountRepository: accountRepository,
+	})
+
 	transactionService := service.NewTransaction(service.TransactionOpts{
 		Logger:                server.Logger,
+		AccountService:        accountService,
 		TransactionRepository: transactionRepository,
 		OperationType:         operationTypeRepository,
 		AccountRepository:     accountRepository,
