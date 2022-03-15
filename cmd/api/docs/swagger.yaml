@@ -177,7 +177,7 @@ paths:
   /operation-types:
     post:
       tags:
-        - "operationType"
+        - "operationTypes"
       summary: "Add a new operation type"
       description: ""
       operationId: "OperationTypeCreate"
@@ -206,7 +206,7 @@ paths:
             $ref: "#/definitions/Error"
     get:
       tags:
-        - "operationType"
+        - "operationTypes"
       summary: "Get all operation types"
       description: ""
       operationId: "OperationTypeCollection"
@@ -246,7 +246,7 @@ paths:
   /operation-types/{id}:
     get:
       tags:
-        - "operationType"
+        - "operationTypes"
       summary: "Get operation type by id"
       description: ""
       operationId: "OperationTypeFindByID"
@@ -312,7 +312,6 @@ definitions:
     properties:
       total:
         type: "number"
-        format: "float64"
       transactions:
         type: "array"
         $ref: "#/definitions/Transaction"

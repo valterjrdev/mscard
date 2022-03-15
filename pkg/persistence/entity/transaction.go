@@ -1,8 +1,11 @@
 package entity
 
 import (
-	"github.com/shopspring/decimal"
 	"time"
+)
+
+const (
+	TransactionTableName = "transaction"
 )
 
 type (
@@ -15,23 +18,20 @@ type (
 	}
 
 	TransactionCollection struct {
-		Total        float64        `json:"total"`
+		Total        int64          `json:"total"`
 		Transactions []*Transaction `json:"transactions"`
 	}
 )
 
 func (t *Transaction) TableName() string {
-	return "transaction"
+	return TransactionTableName
 }
 
 func (t *TransactionCollection) Sum() {
-	values := make([]decimal.Decimal, 0)
+	values := int64(0)
 	for _, transaction := range t.Transactions {
-		values = append(values, decimal.NewFromInt(transaction.Amount))
+		values += transaction.Amount
 	}
 
-	sum := decimal.Sum(decimal.NewFromFloat(0), values...)
-	total, _ := sum.Float64()
-
-	t.Total = total
+	t.Total = values
 }
