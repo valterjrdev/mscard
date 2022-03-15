@@ -19,7 +19,7 @@ lint:
 .PHONY:test
 test:
 	@go clean -testcache
-	@go test -v ./...
+	@go test -v ./... | grep -v "_mock.go"
 
 .PHONY:coverage
 coverage:
