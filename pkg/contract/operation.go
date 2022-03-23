@@ -5,16 +5,16 @@ import (
 )
 
 type (
-	OperationTypeRequest struct {
+	OperationRequest struct {
 		Description string `json:"description"`
-		Negative    string `json:"negative" `
+		Debit       string `json:"debit"`
 	}
 )
 
-func (a OperationTypeRequest) Validate() error {
+func (a OperationRequest) Validate() error {
 	return validation.ValidateStruct(
 		&a,
 		validation.Field(&a.Description, validation.Required),
-		validation.Field(&a.Negative, validation.Required),
+		validation.Field(&a.Debit, validation.Required),
 	)
 }

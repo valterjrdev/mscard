@@ -19,7 +19,7 @@ type (
 		AccountService        Accounts
 		TransactionRepository repository.Transactions
 		AccountRepository     repository.Accounts
-		OperationType         repository.OperationTypes
+		Operation             repository.Operations
 	}
 
 	Transaction struct {
@@ -46,19 +46,19 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 		return nil, err
 	}
 
-	operationType, err := t.OperationType.FindByID(ctx, request.Type)
+	operationType, err := t.Operation.FindByID(ctx, request.Type)
 	if err != nil {
 		t.Logger.Errorf("t.OperationType.FindByID failed with %s\n", err)
 		return nil, err
 	}
 
-	if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, operationType.Negative); err != nil {
+	if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, operationType.Debit); err != nil {
 		t.Logger.Errorf("t.AccountService.UpdateLimit failed with %s\n", err)
 		return nil, err
 	}
 
 	amount := common.Abs(request.Amount)
-	if operationType.Negative {
+	if operationType.Debit {
 		amount = -amount
 	}
 

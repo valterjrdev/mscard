@@ -50,12 +50,12 @@ func main() {
 		server.Logger.Fatalf("db.Use(dbresolver.Register(dbresolver.Config{}) failed with %s\n", err)
 	}
 
-	if err := db.AutoMigrate(&entity.OperationType{}, &entity.Account{}, &entity.Transaction{}); err != nil {
+	if err := db.AutoMigrate(&entity.Operation{}, &entity.Account{}, &entity.Transaction{}); err != nil {
 		server.Logger.Fatalf("DB.AutoMigrate() failed with %s\n", err)
 	}
 
 	accountRepository := repository.NewAccount(server.Logger, db)
-	operationTypeRepository := repository.NewOperationType(server.Logger, db)
+	operationTypeRepository := repository.NewOperation(server.Logger, db)
 	transactionRepository := repository.NewTransaction(server.Logger, db)
 
 	accountService := service.NewAccount(service.AccountOpts{
@@ -66,7 +66,6 @@ func main() {
 		Logger:                server.Logger,
 		AccountService:        accountService,
 		TransactionRepository: transactionRepository,
-		OperationType:         operationTypeRepository,
 		AccountRepository:     accountRepository,
 	})
 
@@ -74,15 +73,13 @@ func main() {
 		AccountRepository: accountRepository,
 	})
 
-	operationTypeHandler := handler.NewOperationType(handler.OperationTypeOpts{
-		OperationTypeRepository: operationTypeRepository,
+	operationTypeHandler := handler.NewOperation(handler.OperationOpts{
+		OperationRepository: operationTypeRepository,
 	})
 
 	transactionHandler := handler.NewTransaction(handler.TransactionOpts{
-		TransactionService:      transactionService,
-		TransactionRepository:   transactionRepository,
-		OperationTypeRepository: operationTypeRepository,
-		AccountRepository:       accountRepository,
+		TransactionService:    transactionService,
+		TransactionRepository: transactionRepository,
 	})
 
 	server.GET("/docs/*", echoSwagger.WrapHandler)
@@ -90,9 +87,9 @@ func main() {
 	server.GET(handler.AccountFindByIDPath, accountHandler.FindByID)
 	server.POST(handler.AccountCreatePath, accountHandler.Create)
 
-	server.GET(handler.OperationTypeFindAllPath, operationTypeHandler.FindAll)
-	server.GET(handler.OperationTypeFindByIDPath, operationTypeHandler.FindByID)
-	server.POST(handler.OperationTypeCreatePath, operationTypeHandler.Create)
+	server.GET(handler.OperationFindAllPath, operationTypeHandler.FindAll)
+	server.GET(handler.OperationFindByIDPath, operationTypeHandler.FindByID)
+	server.POST(handler.OperationCreatePath, operationTypeHandler.Create)
 
 	server.GET(handler.TransactionFindAllPath, transactionHandler.FindAll)
 	server.POST(handler.TransactionCreatePath, transactionHandler.Create)

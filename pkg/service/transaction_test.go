@@ -23,11 +23,11 @@ func TestServiceTransaction_Create(t *testing.T) {
 	mockAccountRepository := repository.NewMockAccounts(ctrl)
 	mockAccountRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(mockAccountEntity, nil)
 
-	mockOperationTypeRepository := repository.NewMockOperationTypes(ctrl)
-	mockOperationTypeRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.OperationType{
+	mockOperationRepository := repository.NewMockOperations(ctrl)
+	mockOperationRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.Operation{
 		ID:          1,
 		Description: "COMPRA A VISTA",
-		Negative:    true,
+		Debit:       true,
 	}, nil)
 
 	mockTransactionRepository := repository.NewMockTransactions(ctrl)
@@ -43,7 +43,7 @@ func TestServiceTransaction_Create(t *testing.T) {
 
 	transactionService := NewTransaction(TransactionOpts{
 		AccountService:        accountServiceMock,
-		OperationType:         mockOperationTypeRepository,
+		Operation:             mockOperationRepository,
 		AccountRepository:     mockAccountRepository,
 		TransactionRepository: mockTransactionRepository,
 	})
@@ -72,11 +72,11 @@ func TestServiceTransaction_Create_Limit_Error(t *testing.T) {
 	mockAccountRepository := repository.NewMockAccounts(ctrl)
 	mockAccountRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(mockAccountEntity, nil)
 
-	mockOperationTypeRepository := repository.NewMockOperationTypes(ctrl)
-	mockOperationTypeRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.OperationType{
+	mockOperationRepository := repository.NewMockOperations(ctrl)
+	mockOperationRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.Operation{
 		ID:          1,
 		Description: "COMPRA A VISTA",
-		Negative:    true,
+		Debit:       true,
 	}, nil)
 
 	accountServiceMock := NewMockAccounts(ctrl)
@@ -85,7 +85,7 @@ func TestServiceTransaction_Create_Limit_Error(t *testing.T) {
 	transactionService := NewTransaction(TransactionOpts{
 		Logger:            mockLogger,
 		AccountService:    accountServiceMock,
-		OperationType:     mockOperationTypeRepository,
+		Operation:         mockOperationRepository,
 		AccountRepository: mockAccountRepository,
 	})
 
@@ -129,11 +129,11 @@ func TestServiceTransaction_Create_Persist_Error(t *testing.T) {
 	mockAccountRepository := repository.NewMockAccounts(ctrl)
 	mockAccountRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(mockAccountEntity, nil)
 
-	mockOperationTypeRepository := repository.NewMockOperationTypes(ctrl)
-	mockOperationTypeRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.OperationType{
+	mockOperationRepository := repository.NewMockOperations(ctrl)
+	mockOperationRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(&entity.Operation{
 		ID:          1,
 		Description: "COMPRA A VISTA",
-		Negative:    true,
+		Debit:       true,
 	}, nil)
 
 	accountServiceMock := NewMockAccounts(ctrl)
@@ -146,7 +146,7 @@ func TestServiceTransaction_Create_Persist_Error(t *testing.T) {
 	transactionService := NewTransaction(TransactionOpts{
 		Logger:                mockLogger,
 		AccountService:        accountServiceMock,
-		OperationType:         mockOperationTypeRepository,
+		Operation:             mockOperationRepository,
 		AccountRepository:     mockAccountRepository,
 		TransactionRepository: mockTransactionRepository,
 	})
@@ -184,7 +184,7 @@ func TestServiceTransaction_Create_Persist_Account_NotFound_Error(t *testing.T) 
 	assert.EqualError(t, err, repository.ErrAccountCreateNotFound.Error())
 }
 
-func TestServiceTransaction_Create_Persist_OperationType_NotFound_Error(t *testing.T) {
+func TestServiceTransaction_Create_Persist_Operation_NotFound_Error(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -197,12 +197,12 @@ func TestServiceTransaction_Create_Persist_OperationType_NotFound_Error(t *testi
 		Document: "56077053074",
 	}, nil)
 
-	mockOperationTypeRepository := repository.NewMockOperationTypes(ctrl)
-	mockOperationTypeRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(nil, repository.ErrOperationTypeCreateNotFound)
+	mockOperationRepository := repository.NewMockOperations(ctrl)
+	mockOperationRepository.EXPECT().FindByID(gomock.Any(), uint(1)).Return(nil, repository.ErrOperationCreateNotFound)
 
 	transactionService := NewTransaction(TransactionOpts{
 		Logger:            mockLogger,
-		OperationType:     mockOperationTypeRepository,
+		Operation:         mockOperationRepository,
 		AccountRepository: mockAccountRepository,
 	})
 
@@ -212,5 +212,5 @@ func TestServiceTransaction_Create_Persist_OperationType_NotFound_Error(t *testi
 		Amount:  1000,
 	})
 	assert.Nil(t, transaction)
-	assert.EqualError(t, err, repository.ErrOperationTypeCreateNotFound.Error())
+	assert.EqualError(t, err, repository.ErrOperationCreateNotFound.Error())
 }

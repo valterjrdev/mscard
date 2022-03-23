@@ -6,19 +6,19 @@ import (
 )
 
 type (
-	OperationTypeCollection struct {
+	OperationCollection struct {
 		Page        int
 		Size        int
 		Description string
-		Negative    string
+		Debit       string
 	}
 )
 
-func (t *OperationTypeCollection) Filter() func(db *gorm.DB) *gorm.DB {
+func (t *OperationCollection) Filter() func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if t.Negative != "" {
-			negative, _ := strconv.ParseBool(t.Negative)
-			db.Where("negative = ?", negative)
+		if t.Debit != "" {
+			negative, _ := strconv.ParseBool(t.Debit)
+			db.Where("debit = ?", negative)
 		}
 
 		if t.Description != "" {

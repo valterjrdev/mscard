@@ -6,7 +6,7 @@ install:
 .PHONY:mock
 mock:
 	@mockgen --package=repository --source=pkg/persistence/repository/account.go --destination=pkg/persistence/repository/account_mock.go Accounts
-	@mockgen --package=repository --source=pkg/persistence/repository/operation_type.go --destination=pkg/persistence/repository/operation_type_mock.go OperationTypes
+	@mockgen --package=repository --source=pkg/persistence/repository/operation.go --destination=pkg/persistence/repository/operation_mock.go Operations
 	@mockgen --package=repository --source=pkg/persistence/repository/transaction.go --destination=pkg/persistence/repository/transaction_mock.go Transactions
 	@mockgen --package=service --source=pkg/service/transaction.go --destination=pkg/service/transaction_mock.go Transactions
 	@mockgen --package=service --source=pkg/service/account.go --destination=pkg/service/account_mock.go Accounts

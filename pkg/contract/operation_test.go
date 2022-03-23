@@ -7,12 +7,12 @@ import (
 
 func TestContractOperationType_Validate_Error(t *testing.T) {
 	cases := []struct {
-		input    OperationTypeRequest
+		input    OperationRequest
 		expected string
 	}{
 		{
-			input:    OperationTypeRequest{},
-			expected: "description: cannot be blank; negative: cannot be blank.",
+			input:    OperationRequest{},
+			expected: "debit: cannot be blank; description: cannot be blank.",
 		},
 	}
 

@@ -11,26 +11,26 @@ import (
 )
 
 const (
-	OperationTypeFindAllPath  = "/operation-types"
-	OperationTypeFindByIDPath = "/operation-types/:id"
-	OperationTypeCreatePath   = "/operation-types"
+	OperationFindAllPath  = "/operations"
+	OperationFindByIDPath = "/operations/:id"
+	OperationCreatePath   = "/operations"
 )
 
 type (
-	OperationTypeOpts struct {
-		OperationTypeRepository repository.OperationTypes
+	OperationOpts struct {
+		OperationRepository repository.Operations
 	}
-	OperationType struct {
-		OperationTypeOpts
+	Operation struct {
+		OperationOpts
 	}
 )
 
-func NewOperationType(opts OperationTypeOpts) *OperationType {
-	return &OperationType{opts}
+func NewOperation(opts OperationOpts) *Operation {
+	return &Operation{opts}
 }
 
-func (o *OperationType) Create(c echo.Context) error {
-	request := &contract.OperationTypeRequest{}
+func (o *Operation) Create(c echo.Context) error {
+	request := &contract.OperationRequest{}
 	if err := c.Bind(request); err != nil {
 		c.Logger().Errorf("c.Bind failed with %s\n", err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -41,10 +41,10 @@ func (o *OperationType) Create(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	negative, _ := strconv.ParseBool(request.Negative)
-	operationType, err := o.OperationTypeRepository.Create(c.Request().Context(), entity.OperationType{
+	typeOperation, _ := strconv.ParseBool(request.Debit)
+	operationType, err := o.OperationRepository.Create(c.Request().Context(), entity.Operation{
 		Description: request.Description,
-		Negative:    negative,
+		Debit:       typeOperation,
 	})
 	if err != nil {
 		c.Logger().Errorf("o.OperationTypeRepository.Create failed with %s\n", err.Error())
@@ -54,9 +54,9 @@ func (o *OperationType) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, operationType)
 }
 
-func (o *OperationType) FindByID(c echo.Context) error {
+func (o *Operation) FindByID(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	operationType, err := o.OperationTypeRepository.FindByID(c.Request().Context(), uint(id))
+	operationType, err := o.OperationRepository.FindByID(c.Request().Context(), uint(id))
 	if err != nil {
 		c.Logger().Errorf("o.OperationTypeRepository.FindByID failed with %s\n", err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -65,15 +65,15 @@ func (o *OperationType) FindByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, operationType)
 }
 
-func (o *OperationType) FindAll(c echo.Context) error {
+func (o *Operation) FindAll(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	size, _ := strconv.Atoi(c.QueryParam("size"))
 
-	operationTypes, err := o.OperationTypeRepository.FindAll(c.Request().Context(), filter.OperationTypeCollection{
+	operationTypes, err := o.OperationRepository.FindAll(c.Request().Context(), filter.OperationCollection{
 		Page:        page,
 		Size:        size,
 		Description: c.QueryParam("description"),
-		Negative:    c.QueryParam("negative"),
+		Debit:       c.QueryParam("debit"),
 	})
 	if err != nil {
 		c.Logger().Errorf("o.OperationTypeRepository.FindAll failed with %s\n", err.Error())

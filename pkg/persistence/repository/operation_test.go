@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func TestOperationTypeRepository_Create(t *testing.T) {
+func TestOperationRepository_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -31,7 +31,7 @@ func TestOperationTypeRepository_Create(t *testing.T) {
 
 	dbmock.ExpectBegin()
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		INSERT INTO "operation_type" ("description","negative") 
+		INSERT INTO "operation" ("description","debit") 
 		VALUES ($1,$2) 
 		RETURNING "id"
 	`)).WithArgs("COMPRA A VISTA", true).WillReturnRows(
@@ -39,23 +39,23 @@ func TestOperationTypeRepository_Create(t *testing.T) {
 	)
 	dbmock.ExpectCommit()
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationType, err := OperationTypeRepository.Create(ctx, entity.OperationType{
+	Operation, err := OperationRepository.Create(ctx, entity.Operation{
 		Description: "COMPRA A VISTA",
-		Negative:    true,
+		Debit:       true,
 	})
 	assert.NoError(t, err)
-	assert.Equal(t, uint(1), operationType.ID)
+	assert.Equal(t, uint(1), Operation.ID)
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestOperationTypeRepository_Create_Persist_Error(t *testing.T) {
+func TestOperationRepository_Create_Persist_Error(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -70,27 +70,27 @@ func TestOperationTypeRepository_Create_Persist_Error(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectBegin()
-	dbmock.ExpectQuery("^INSERT INTO \"operation_type\"(.+)$").WillReturnError(ErrOperationTypeCreate)
+	dbmock.ExpectQuery("^INSERT INTO \"operation\"(.+)$").WillReturnError(ErrOperationCreate)
 	dbmock.ExpectRollback()
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationType, err := OperationTypeRepository.Create(ctx, entity.OperationType{
+	Operation, err := OperationRepository.Create(ctx, entity.Operation{
 		Description: "COMPRA A VISTA",
-		Negative:    true,
+		Debit:       true,
 	})
 
-	assert.Nil(t, operationType)
-	assert.EqualError(t, err, ErrOperationTypeCreate.Error())
+	assert.Nil(t, Operation)
+	assert.EqualError(t, err, ErrOperationCreate.Error())
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestOperationTypeRepository_Create_Persist_ValidateUniqueKeyConstraint_Error(t *testing.T) {
+func TestOperationRepository_Create_Persist_ValidateUniqueKeyConstraint_Error(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -105,31 +105,31 @@ func TestOperationTypeRepository_Create_Persist_ValidateUniqueKeyConstraint_Erro
 	assert.NoError(t, err)
 
 	dbmock.ExpectBegin()
-	dbmock.ExpectQuery("^INSERT INTO \"operation_type\"(.+)$").WillReturnError(&pgconn.PgError{
+	dbmock.ExpectQuery("^INSERT INTO \"operation\"(.+)$").WillReturnError(&pgconn.PgError{
 		Code:    UniqueKeyCodeConstraint,
-		Message: ErrOperationTypeCreateAlreadyExists.Error(),
+		Message: ErrOperationCreateAlreadyExists.Error(),
 	})
 
 	dbmock.ExpectRollback()
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationType, err := OperationTypeRepository.Create(ctx, entity.OperationType{
+	Operation, err := OperationRepository.Create(ctx, entity.Operation{
 		Description: "COMPRA A VISTA",
-		Negative:    true,
+		Debit:       true,
 	})
 
-	assert.Nil(t, operationType)
-	assert.EqualError(t, err, ErrOperationTypeCreateAlreadyExists.Error())
+	assert.Nil(t, Operation)
+	assert.EqualError(t, err, ErrOperationCreateAlreadyExists.Error())
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestOperationTypeRepository_FindByID(t *testing.T) {
+func TestOperationRepository_FindByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -143,30 +143,30 @@ func TestOperationTypeRepository_FindByID(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","description","negative"
-		FROM "operation_type" 
-		WHERE "operation_type"."id" = $1 
-		ORDER BY "operation_type"."id" 
+		SELECT "id","description","debit"
+		FROM "operation" 
+		WHERE "operation"."id" = $1 
+		ORDER BY "operation"."id" 
 		LIMIT 1
-	`)).WithArgs(uint(1)).WillReturnRows(sqlmock.NewRows([]string{"id", "description", "negative"}).AddRow(uint(1), "COMPRA A VISTA", true))
+	`)).WithArgs(uint(1)).WillReturnRows(sqlmock.NewRows([]string{"id", "description", "debit"}).AddRow(uint(1), "COMPRA A VISTA", true))
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationType, err := OperationTypeRepository.FindByID(ctx, 1)
-	assert.NotNil(t, operationType)
+	Operation, err := OperationRepository.FindByID(ctx, 1)
+	assert.NotNil(t, Operation)
 	assert.NoError(t, err)
 
-	assert.Equal(t, uint(1), operationType.ID)
-	assert.Equal(t, "COMPRA A VISTA", operationType.Description)
-	assert.Equal(t, true, operationType.Negative)
+	assert.Equal(t, uint(1), Operation.ID)
+	assert.Equal(t, "COMPRA A VISTA", Operation.Description)
+	assert.Equal(t, true, Operation.Debit)
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestOperationTypeRepository_FindByID_Error(t *testing.T) {
+func TestOperationRepository_FindByID_Error(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -181,27 +181,27 @@ func TestOperationTypeRepository_FindByID_Error(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","description","negative"
-		FROM "operation_type" 
-		WHERE "operation_type"."id" = $1 
-		ORDER BY "operation_type"."id" 
+		SELECT "id","description","debit"
+		FROM "operation" 
+		WHERE "operation"."id" = $1 
+		ORDER BY "operation"."id" 
 		LIMIT 1
-	`)).WithArgs(uint(1)).WillReturnError(ErrOperationTypeFindByID)
+	`)).WithArgs(uint(1)).WillReturnError(ErrOperationFindByID)
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationType, err := OperationTypeRepository.FindByID(ctx, 1)
-	assert.Nil(t, operationType)
-	assert.EqualError(t, err, ErrOperationTypeFindByID.Error())
+	Operation, err := OperationRepository.FindByID(ctx, 1)
+	assert.Nil(t, Operation)
+	assert.EqualError(t, err, ErrOperationFindByID.Error())
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestOperationTypeRepository_FindByID_RecordNotFound_Error(t *testing.T) {
+func TestOperationRepository_FindByID_RecordNotFound_Error(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -216,27 +216,27 @@ func TestOperationTypeRepository_FindByID_RecordNotFound_Error(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","description","negative"
-		FROM "operation_type" 
-		WHERE "operation_type"."id" = $1 
-		ORDER BY "operation_type"."id" 
+		SELECT "id","description","debit"
+		FROM "operation" 
+		WHERE "operation"."id" = $1 
+		ORDER BY "operation"."id" 
 		LIMIT 1
 	`)).WithArgs(uint(1)).WillReturnError(gorm.ErrRecordNotFound)
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationType, err := OperationTypeRepository.FindByID(ctx, 1)
-	assert.Nil(t, operationType)
-	assert.EqualError(t, err, ErrOperationTypeCreateNotFound.Error())
+	Operation, err := OperationRepository.FindByID(ctx, 1)
+	assert.Nil(t, Operation)
+	assert.EqualError(t, err, ErrOperationCreateNotFound.Error())
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
 
-func TestOperationTypeRepository_Collection(t *testing.T) {
+func TestOperationRepository_Collection(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -250,20 +250,20 @@ func TestOperationTypeRepository_Collection(t *testing.T) {
 	assert.NoError(t, err)
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","description","negative"
-		FROM "operation_type"
+		SELECT "id","description","debit"
+		FROM "operation"
 		LIMIT 10
 	`)).WillReturnRows(sqlmock.NewRows([]string{"id", "description"}).
 		AddRow(uint(1), "COMPRA A VISTA").
 		AddRow(uint(2), "COMPRA PARCELADA"),
 	)
 
-	OperationTypeRepository := NewOperationType(logger, gormdb)
+	OperationRepository := NewOperation(logger, gormdb)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	operationTypes, err := OperationTypeRepository.FindAll(ctx, filter.OperationTypeCollection{})
-	assert.Len(t, operationTypes, 2)
+	Operations, err := OperationRepository.FindAll(ctx, filter.OperationCollection{})
+	assert.Len(t, Operations, 2)
 	assert.NoError(t, err)
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {

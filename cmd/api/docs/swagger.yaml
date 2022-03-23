@@ -174,13 +174,13 @@ paths:
           description: "Error"
           schema:
             $ref: "#/definitions/Error"
-  /operation-types:
+  /operations:
     post:
       tags:
-        - "operationTypes"
-      summary: "Add a new operation type"
+        - "operations"
+      summary: "Add a new operation"
       description: ""
-      operationId: "OperationTypeCreate"
+      operationId: "OperationCreate"
       consumes:
         - "application/json"
       produces:
@@ -190,12 +190,12 @@ paths:
           name: "body"
           required: true
           schema:
-            $ref: "#/definitions/OperationTypeCreate"
+            $ref: "#/definitions/OperationCreate"
       responses:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/OperationType"
+            $ref: "#/definitions/Operation"
         "400":
           description: "Error"
           schema:
@@ -206,8 +206,8 @@ paths:
             $ref: "#/definitions/Error"
     get:
       tags:
-        - "operationTypes"
-      summary: "Get all operation types"
+        - "operations"
+      summary: "Get all operations"
       description: ""
       operationId: "OperationTypeCollection"
       produces:
@@ -226,7 +226,7 @@ paths:
           schema:
             type: string
         - in: query
-          name: negative
+          name: debit
           schema:
             type: boolean
       responses:
@@ -234,7 +234,7 @@ paths:
           description: "successful operation"
           schema:
             type: array
-            $ref: "#/definitions/OperationType"
+            $ref: "#/definitions/Operation"
         "400":
           description: "Error"
           schema:
@@ -243,13 +243,13 @@ paths:
           description: "Error"
           schema:
             $ref: "#/definitions/Error"
-  /operation-types/{id}:
+  /operations/{id}:
     get:
       tags:
-        - "operationTypes"
-      summary: "Get operation type by id"
+        - "operations"
+      summary: "Get operation by id"
       description: ""
-      operationId: "OperationTypeFindByID"
+      operationId: "OperationFindByID"
       produces:
         - "application/json"
       parameters:
@@ -261,7 +261,7 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/OperationType"
+            $ref: "#/definitions/Operation"
         "400":
           description: "Error"
           schema:
@@ -327,7 +327,7 @@ definitions:
       amount:
         type: "number"
         format: "int64"
-  OperationType:
+  Operation:
     type: "object"
     properties:
       id:
@@ -335,13 +335,13 @@ definitions:
         format: "uint"
       description:
         type: "string"
-      negative:
+      debit:
         type: "string"
 
-  OperationTypeCreate:
+  OperationCreate:
     type: "object"
     properties:
       description:
         type: "string"
-      negative:
+      debit:
         type: "string"

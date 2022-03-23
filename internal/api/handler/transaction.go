@@ -17,10 +17,8 @@ const (
 
 type (
 	TransactionOpts struct {
-		TransactionService      service.Transactions
-		TransactionRepository   repository.Transactions
-		AccountRepository       repository.Accounts
-		OperationTypeRepository repository.OperationTypes
+		TransactionService    service.Transactions
+		TransactionRepository repository.Transactions
 	}
 	Transaction struct {
 		TransactionOpts
