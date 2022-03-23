@@ -1,0 +1,15 @@
+POST http://127.0.0.1:8000/transactions
+Content-Type: application/json
+
+{
+  "account_id": 0,
+  "operation_type_id": 0,
+  "amount": 0
+}
+
+###
+
+GET http://127.0.0.1:8000/transactions?page=&size=&account_id=&operation_type_id=&eventDateStart=&eventDateEnd=
+Accept: application/json
+
+###

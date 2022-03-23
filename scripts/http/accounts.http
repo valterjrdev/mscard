@@ -1,0 +1,19 @@
+POST http://127.0.0.1:8000/accounts
+Content-Type: application/json
+
+{
+  "document_number": "string",
+  "limit": 0
+}
+
+###
+
+GET http://127.0.0.1:8000/accounts/1
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/accounts?page=&size=&document_number=
+Accept: application/json
+
+###
