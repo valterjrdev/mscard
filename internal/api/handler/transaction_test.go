@@ -38,7 +38,7 @@ func TestHandlerTransaction_Create(t *testing.T) {
 		EventDate: time.Now(),
 	}, nil)
 
-	req := httptest.NewRequest(http.MethodPost, AccountCreatePath, strings.NewReader(`{"account_id":1,"operation_type_id":4,"amount":10020}`))
+	req := httptest.NewRequest(http.MethodPost, AccountCreatePath, strings.NewReader(`{"account_id":1,"operation_id":4,"amount":10020}`))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	h := NewTransaction(TransactionOpts{
@@ -47,7 +47,7 @@ func TestHandlerTransaction_Create(t *testing.T) {
 
 	if assert.NoError(t, h.Create(echo.New().NewContext(req, rec))) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.JSONEq(t, `{"id":1,"account_id":1,"operation_type_id":4,"amount":10020,"event_date":"2022-03-12T01:02:03.000000004Z"}`, rec.Body.String())
+		assert.JSONEq(t, `{"id":1,"account_id":1,"operation_id":4,"amount":10020,"event_date":"2022-03-12T01:02:03.000000004Z"}`, rec.Body.String())
 	}
 }
 
@@ -66,7 +66,7 @@ func TestHandlerTransaction_Create_Persist_Error(t *testing.T) {
 	mockTransactionService := service.NewMockTransactions(ctrl)
 	mockTransactionService.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil, repository.ErrTransactionCreate)
 
-	req := httptest.NewRequest(http.MethodPost, AccountCreatePath, strings.NewReader(`{"account_id":1,"operation_type_id":4,"amount":10020}`))
+	req := httptest.NewRequest(http.MethodPost, AccountCreatePath, strings.NewReader(`{"account_id":1,"operation_id":4,"amount":10020}`))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	h := NewTransaction(TransactionOpts{
@@ -147,8 +147,8 @@ func TestHandlerTransaction_FindAll(t *testing.T) {
 		{
 			"total": -5000,
 			"transactions": [
-				{"id":1,"account_id":1,"operation_type_id":4,"amount":-10000,"event_date":"2022-03-12T01:02:03.000000004Z"},
-				{"id":2,"account_id":1,"operation_type_id":4,"amount":5000,"event_date":"2022-03-12T01:02:03.000000004Z"}
+				{"id":1,"account_id":1,"operation_id":4,"amount":-10000,"event_date":"2022-03-12T01:02:03.000000004Z"},
+				{"id":2,"account_id":1,"operation_id":4,"amount":5000,"event_date":"2022-03-12T01:02:03.000000004Z"}
 			]
 		}
 		`, rec.Body.String())

@@ -10,7 +10,7 @@ type (
 		Page           int
 		Size           int
 		Account        string
-		Type           string
+		Operation      string
 		EventDateStart string
 		EventDateEnd   string
 	}
@@ -23,9 +23,9 @@ func (t *TransactionCollection) Filter() func(db *gorm.DB) *gorm.DB {
 			db.Where("account_id = ?", account)
 		}
 
-		if t.Type != "" {
-			operationType, _ := strconv.Atoi(t.Type)
-			db.Where("operation_type_id = ?", operationType)
+		if t.Operation != "" {
+			operation, _ := strconv.Atoi(t.Operation)
+			db.Where("operation_id = ?", operation)
 		}
 
 		if t.EventDateStart != "" && t.EventDateEnd != "" {

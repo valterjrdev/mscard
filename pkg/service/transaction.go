@@ -46,25 +46,25 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 		return nil, err
 	}
 
-	operationType, err := t.Operation.FindByID(ctx, request.Type)
+	operation, err := t.Operation.FindByID(ctx, request.Operation)
 	if err != nil {
 		t.Logger.Errorf("t.OperationType.FindByID failed with %s\n", err)
 		return nil, err
 	}
 
-	if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, operationType.Debit); err != nil {
+	if err := t.AccountService.UpdateLimit(ctx, account, request.Amount, operation.Debit); err != nil {
 		t.Logger.Errorf("t.AccountService.UpdateLimit failed with %s\n", err)
 		return nil, err
 	}
 
 	amount := common.Abs(request.Amount)
-	if operationType.Debit {
+	if operation.Debit {
 		amount = -amount
 	}
 
 	transaction, err := t.TransactionRepository.Create(ctx, entity.Transaction{
 		Account:   request.Account,
-		Type:      request.Type,
+		Type:      request.Operation,
 		Amount:    amount,
 		EventDate: time.Now(),
 	})

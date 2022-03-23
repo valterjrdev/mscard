@@ -55,7 +55,7 @@ func (t *Transaction) FindAll(c echo.Context) error {
 		Page:           page,
 		Size:           size,
 		Account:        c.QueryParam("account_id"),
-		Type:           c.QueryParam("operation_type_id"),
+		Operation:      c.QueryParam("operation_id"),
 		EventDateStart: eventDateStart,
 		EventDateEnd:   eventDateEnd,
 	})

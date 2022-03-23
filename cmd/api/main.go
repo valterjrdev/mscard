@@ -55,7 +55,7 @@ func main() {
 	}
 
 	accountRepository := repository.NewAccount(server.Logger, db)
-	operationTypeRepository := repository.NewOperation(server.Logger, db)
+	operationRepository := repository.NewOperation(server.Logger, db)
 	transactionRepository := repository.NewTransaction(server.Logger, db)
 
 	accountService := service.NewAccount(service.AccountOpts{
@@ -67,6 +67,7 @@ func main() {
 		AccountService:        accountService,
 		TransactionRepository: transactionRepository,
 		AccountRepository:     accountRepository,
+		Operation:             operationRepository,
 	})
 
 	accountHandler := handler.NewAccount(handler.AccountOpts{
@@ -74,7 +75,7 @@ func main() {
 	})
 
 	operationTypeHandler := handler.NewOperation(handler.OperationOpts{
-		OperationRepository: operationTypeRepository,
+		OperationRepository: operationRepository,
 	})
 
 	transactionHandler := handler.NewTransaction(handler.TransactionOpts{

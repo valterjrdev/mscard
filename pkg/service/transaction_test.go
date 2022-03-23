@@ -49,9 +49,9 @@ func TestServiceTransaction_Create(t *testing.T) {
 	})
 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
-		Account: 1,
-		Type:    1,
-		Amount:  1000,
+		Account:   1,
+		Operation: 1,
+		Amount:    1000,
 	})
 	assert.NotNil(t, transaction)
 	assert.Nil(t, err)
@@ -90,9 +90,9 @@ func TestServiceTransaction_Create_Limit_Error(t *testing.T) {
 	})
 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
-		Account: 1,
-		Type:    1,
-		Amount:  1000,
+		Account:   1,
+		Operation: 1,
+		Amount:    1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, ErrLimitExceeded.Error())
@@ -111,7 +111,7 @@ func TestServiceTransaction_Create_Validate_Error(t *testing.T) {
 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{})
 	assert.Nil(t, transaction)
-	assert.EqualError(t, err, "account_id: cannot be blank; amount: cannot be blank; operation_type_id: cannot be blank.")
+	assert.EqualError(t, err, "account_id: cannot be blank; amount: cannot be blank; operation_id: cannot be blank.")
 }
 
 func TestServiceTransaction_Create_Persist_Error(t *testing.T) {
@@ -152,9 +152,9 @@ func TestServiceTransaction_Create_Persist_Error(t *testing.T) {
 	})
 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
-		Account: 1,
-		Type:    1,
-		Amount:  1000,
+		Account:   1,
+		Operation: 1,
+		Amount:    1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, repository.ErrTransactionCreate.Error())
@@ -176,9 +176,9 @@ func TestServiceTransaction_Create_Persist_Account_NotFound_Error(t *testing.T) 
 	})
 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
-		Account: 1,
-		Type:    1,
-		Amount:  1000,
+		Account:   1,
+		Operation: 1,
+		Amount:    1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, repository.ErrAccountCreateNotFound.Error())
@@ -207,9 +207,9 @@ func TestServiceTransaction_Create_Persist_Operation_NotFound_Error(t *testing.T
 	})
 
 	transaction, err := transactionService.Create(context.Background(), &contract.TransactionRequest{
-		Account: 1,
-		Type:    1,
-		Amount:  1000,
+		Account:   1,
+		Operation: 1,
+		Amount:    1000,
 	})
 	assert.Nil(t, transaction)
 	assert.EqualError(t, err, repository.ErrOperationCreateNotFound.Error())

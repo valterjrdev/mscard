@@ -14,7 +14,7 @@ func TestContractTransaction_Validate_Error(t *testing.T) {
 		{
 			description: "fields required",
 			input:       TransactionRequest{},
-			expected:    "account_id: cannot be blank; amount: cannot be blank; operation_type_id: cannot be blank.",
+			expected:    "account_id: cannot be blank; amount: cannot be blank; operation_id: cannot be blank.",
 		},
 	}
 

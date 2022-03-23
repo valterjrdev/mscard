@@ -12,7 +12,7 @@ type (
 	Transaction struct {
 		ID        uint      `json:"id" gorm:"primaryKey;autoIncrement;column:id"`
 		Account   uint      `json:"account_id" gorm:"type:integer;column:account_id"`
-		Type      uint      `json:"operation_type_id" gorm:"type:integer;column:operation_type_id"`
+		Type      uint      `json:"operation_id" gorm:"type:integer;column:operation_id"`
 		Amount    int64     `json:"amount" gorm:"type:integer;column:amount"`
 		EventDate time.Time `json:"event_date" gorm:"type:timestamp;column:event_date"`
 	}

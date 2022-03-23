@@ -49,7 +49,7 @@ func (a *Transaction) FindAll(ctx context.Context, filters filter.TransactionCol
 	find := tx.Scopes(filters.Filter(), persistence.Paginator(filters.Page, filters.Size)).Select([]string{
 		"id",
 		"account_id",
-		"operation_type_id",
+		"operation_id",
 		"amount",
 		"event_date",
 	}).Find(&transactions)

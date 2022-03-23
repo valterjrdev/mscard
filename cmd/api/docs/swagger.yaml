@@ -149,7 +149,7 @@ paths:
           schema:
             type: string
         - in: query
-          name: operation_type_id
+          name: operation_id
           schema:
             type: string
         - in: query
@@ -300,7 +300,7 @@ definitions:
       account_id:
         type: "integer"
         format: "uint"
-      operation_type_id:
+      operation_id:
         type: "integer"
         format: "uint"
       amount:
@@ -321,7 +321,7 @@ definitions:
       account_id:
         type: "integer"
         format: "uint"
-      operation_type_id:
+      operation_id:
         type: "integer"
         format: "uint"
       amount:
