@@ -12,7 +12,7 @@ func TestTransaction_TableName(t *testing.T) {
 
 func TestTransactionCollection_TableName(t *testing.T) {
 	collection := TransactionCollection{
-		Transactions: []*Transaction{
+		Data: []*Transaction{
 			{
 				Amount: 1000,
 			},
@@ -25,6 +25,5 @@ func TestTransactionCollection_TableName(t *testing.T) {
 		},
 	}
 	collection.Sum()
-
-	assert.Equal(t, int64(6000), collection.Total)
+	assert.Equal(t, int64(6000), collection.Balance)
 }

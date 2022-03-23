@@ -109,7 +109,7 @@ func TestHandlerTransaction_FindAll(t *testing.T) {
 	}()
 
 	collection := &entity.TransactionCollection{
-		Transactions: []*entity.Transaction{
+		Data: []*entity.Transaction{
 			{
 				ID:        1,
 				Account:   1,
@@ -145,8 +145,8 @@ func TestHandlerTransaction_FindAll(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.JSONEq(t, `
 		{
-			"total": -5000,
-			"transactions": [
+			"balance": -5000,
+			"data": [
 				{"id":1,"account_id":1,"operation_id":4,"amount":-10000,"event_date":"2022-03-12T01:02:03.000000004Z"},
 				{"id":2,"account_id":1,"operation_id":4,"amount":5000,"event_date":"2022-03-12T01:02:03.000000004Z"}
 			]

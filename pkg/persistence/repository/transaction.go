@@ -54,7 +54,7 @@ func (a *Transaction) FindAll(ctx context.Context, filters filter.TransactionCol
 		"event_date",
 	}).Find(&transactions)
 
-	collection := &entity.TransactionCollection{Transactions: transactions}
+	collection := &entity.TransactionCollection{Data: transactions}
 	collection.Sum()
 	return collection, find.Error
 }

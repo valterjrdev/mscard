@@ -18,8 +18,8 @@ type (
 	}
 
 	TransactionCollection struct {
-		Total        int64          `json:"total"`
-		Transactions []*Transaction `json:"transactions"`
+		Balance int64          `json:"balance"`
+		Data    []*Transaction `json:"data"`
 	}
 )
 
@@ -29,9 +29,9 @@ func (t *Transaction) TableName() string {
 
 func (t *TransactionCollection) Sum() {
 	values := int64(0)
-	for _, transaction := range t.Transactions {
+	for _, transaction := range t.Data {
 		values += transaction.Amount
 	}
 
-	t.Total = values
+	t.Balance = values
 }

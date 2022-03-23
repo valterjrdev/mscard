@@ -310,9 +310,9 @@ definitions:
   TransactionCollection:
     type: "object"
     properties:
-      total:
+      balance:
         type: "number"
-      transactions:
+      data:
         type: "array"
         $ref: "#/definitions/Transaction"
   TransactionCreate:

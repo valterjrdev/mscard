@@ -134,9 +134,9 @@ func TestTransactionRepository_Collection(t *testing.T) {
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(`SELECT "id","account_id","operation_id","amount","event_date" FROM "transaction" LIMIT 10`)).WillReturnRows(
 		sqlmock.NewRows([]string{"id", "account_id", "operation_id", "amount", "event_date"}).
-			AddRow(uint(1), uint(1), uint(1), 12340, time.Now()).
-			AddRow(uint(2), uint(2), uint(2), 10040, time.Now()).
-			AddRow(uint(3), uint(3), uint(3), 10040, time.Now()),
+			AddRow(uint(1), uint(1), uint(1), 1000, time.Now()).
+			AddRow(uint(2), uint(2), uint(2), 1000, time.Now()).
+			AddRow(uint(3), uint(3), uint(3), -100, time.Now()),
 	)
 
 	transactionRepository := NewTransaction(logger, gormdb)
@@ -145,7 +145,8 @@ func TestTransactionRepository_Collection(t *testing.T) {
 	defer cancel()
 	collection, err := transactionRepository.FindAll(ctx, filter.TransactionCollection{})
 	assert.NoError(t, err)
-	assert.Len(t, collection.Transactions, 3)
+	assert.Len(t, collection.Data, 3)
+	assert.Equal(t, collection.Balance, int64(1900))
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
@@ -184,7 +185,8 @@ func TestTransactionRepository_Collection_Fetch_Error(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
 	collection, err := transactionRepository.FindAll(ctx, filter.TransactionCollection{})
-	assert.Len(t, collection.Transactions, 0)
+	assert.Len(t, collection.Data, 0)
+	assert.Equal(t, collection.Balance, int64(0))
 	assert.EqualError(t, err, expected.Error())
 
 	if err := dbmock.ExpectationsWereMet(); err != nil {
