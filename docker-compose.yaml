@@ -19,6 +19,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      jaeger:
+        condition: service_healthy
   database:
     image: "postgres:14-alpine3.15"
     healthcheck:
@@ -32,3 +34,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: card
+  jaeger:
+    image: jaegertracing/all-in-one:1.32.0
+    healthcheck:
+      test: nc -z localhost 16686 || exit -1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "6831:6831"
+      - "16686:16686"
+      - "14268:14268"

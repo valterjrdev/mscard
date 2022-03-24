@@ -6,6 +6,7 @@ import (
 	"ms/card/pkg/persistence/entity"
 	"ms/card/pkg/persistence/filter"
 	"ms/card/pkg/persistence/repository"
+	"ms/card/pkg/telemetry/jaeger"
 	"net/http"
 	"strconv"
 )
@@ -30,6 +31,9 @@ func NewOperation(opts OperationOpts) *Operation {
 }
 
 func (o *Operation) Create(c echo.Context) error {
+	ctx, span := jaeger.Span(c.Request().Context())
+	defer span.End()
+
 	request := &contract.OperationRequest{}
 	if err := c.Bind(request); err != nil {
 		c.Logger().Errorf("c.Bind failed with %s\n", err.Error())
@@ -42,7 +46,7 @@ func (o *Operation) Create(c echo.Context) error {
 	}
 
 	typeOperation, _ := strconv.ParseBool(request.Debit)
-	operationType, err := o.OperationRepository.Create(c.Request().Context(), entity.Operation{
+	operationType, err := o.OperationRepository.Create(ctx, entity.Operation{
 		Description: request.Description,
 		Debit:       typeOperation,
 	})
@@ -55,8 +59,11 @@ func (o *Operation) Create(c echo.Context) error {
 }
 
 func (o *Operation) FindByID(c echo.Context) error {
+	ctx, span := jaeger.Span(c.Request().Context())
+	defer span.End()
+
 	id, _ := strconv.Atoi(c.Param("id"))
-	operationType, err := o.OperationRepository.FindByID(c.Request().Context(), uint(id))
+	operationType, err := o.OperationRepository.FindByID(ctx, uint(id))
 	if err != nil {
 		c.Logger().Errorf("o.OperationTypeRepository.FindByID failed with %s\n", err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -66,10 +73,13 @@ func (o *Operation) FindByID(c echo.Context) error {
 }
 
 func (o *Operation) FindAll(c echo.Context) error {
+	ctx, span := jaeger.Span(c.Request().Context())
+	defer span.End()
+
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	size, _ := strconv.Atoi(c.QueryParam("size"))
 
-	operationTypes, err := o.OperationRepository.FindAll(c.Request().Context(), filter.OperationCollection{
+	operationTypes, err := o.OperationRepository.FindAll(ctx, filter.OperationCollection{
 		Page:        page,
 		Size:        size,
 		Description: c.QueryParam("description"),

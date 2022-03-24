@@ -6,6 +6,7 @@ import (
 	"golang.org/x/xerrors"
 	"gorm.io/gorm"
 	"ms/card/pkg/common"
+	"ms/card/pkg/telemetry/jaeger"
 
 	"ms/card/pkg/persistence"
 	"ms/card/pkg/persistence/entity"
@@ -45,6 +46,9 @@ func NewAccount(logger common.Logger, adapter *gorm.DB) *Account {
 }
 
 func (a *Account) Create(ctx context.Context, structure entity.Account) (*entity.Account, error) {
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
+
 	tx := a.adapter.WithContext(ctx)
 	if result := tx.Create(&structure); result.Error != nil {
 		a.logger.Errorf("tx.Create() failed with %s\n", result.Error)
@@ -60,8 +64,10 @@ func (a *Account) Create(ctx context.Context, structure entity.Account) (*entity
 }
 
 func (a *Account) FindByID(ctx context.Context, id uint) (*entity.Account, error) {
-	var account entity.Account
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
 
+	var account entity.Account
 	tx := a.adapter.WithContext(ctx)
 	if result := tx.Select([]string{"id", "document_number", "limit"}).First(&account, id); result.Error != nil {
 		a.logger.Errorf("tx.First() failed with %s\n", result.Error)
@@ -76,6 +82,9 @@ func (a *Account) FindByID(ctx context.Context, id uint) (*entity.Account, error
 }
 
 func (a *Account) FindAll(ctx context.Context, filters filter.AccountCollection) ([]*entity.Account, error) {
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
+
 	accounts := make([]*entity.Account, 0)
 	tx := a.adapter.WithContext(ctx)
 	find := tx.Scopes(filters.Filter(), persistence.Paginator(filters.Page, filters.Size)).Select([]string{
@@ -88,6 +97,9 @@ func (a *Account) FindAll(ctx context.Context, filters filter.AccountCollection)
 }
 
 func (a *Account) UpdateLimit(ctx context.Context, structure *entity.Account) error {
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
+
 	tx := a.adapter.WithContext(ctx)
 	if err := tx.Save(structure); err.Error != nil {
 		return err.Error

@@ -6,6 +6,7 @@ import (
 	"ms/card/pkg/common"
 	"ms/card/pkg/persistence/entity"
 	"ms/card/pkg/persistence/repository"
+	"ms/card/pkg/telemetry/jaeger"
 )
 
 var (
@@ -32,8 +33,10 @@ func NewAccount(opts AccountOpts) *Account {
 }
 
 func (a *Account) UpdateLimit(ctx context.Context, account *entity.Account, amount int64, negative bool) error {
-	amount = common.Abs(amount)
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
 
+	amount = common.Abs(amount)
 	if negative {
 		if amount > account.Limit {
 			return ErrLimitExceeded

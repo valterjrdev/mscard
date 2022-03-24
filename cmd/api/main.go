@@ -15,6 +15,7 @@ import (
 	"ms/card/pkg/persistence/entity"
 	"ms/card/pkg/persistence/repository"
 	"ms/card/pkg/service"
+	"ms/card/pkg/telemetry/jaeger"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +25,14 @@ import (
 func main() {
 	_ = godotenv.Load()
 	server := echo.New()
+	server.HideBanner = true
+
+	serviceName := os.Getenv("API_NAME")
+	serviceNamespace := os.Getenv("API_NAMESPACE")
+	if err := jaeger.Setup(serviceName, serviceNamespace); err != nil {
+		server.Logger.Fatalf("telemetry.Jaeger failed with %s\n", err)
+	}
+
 	server.Use(middleware.Secure())
 	server.Use(middleware.Logger())
 	server.Use(middleware.Recover())

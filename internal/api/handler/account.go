@@ -6,6 +6,7 @@ import (
 	"ms/card/pkg/persistence/entity"
 	"ms/card/pkg/persistence/filter"
 	"ms/card/pkg/persistence/repository"
+	"ms/card/pkg/telemetry/jaeger"
 	"net/http"
 	"strconv"
 )
@@ -30,6 +31,9 @@ func NewAccount(opts AccountOpts) *Account {
 }
 
 func (a *Account) Create(c echo.Context) error {
+	ctx, span := jaeger.Span(c.Request().Context())
+	defer span.End()
+
 	request := &contract.AccountRequest{}
 	if err := c.Bind(request); err != nil {
 		c.Logger().Errorf("c.Bind failed with %s\n", err.Error())
@@ -41,7 +45,7 @@ func (a *Account) Create(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	account, err := a.AccountRepository.Create(c.Request().Context(), entity.Account{
+	account, err := a.AccountRepository.Create(ctx, entity.Account{
 		Document: request.Document,
 		Limit:    request.Limit,
 	})
@@ -54,9 +58,11 @@ func (a *Account) Create(c echo.Context) error {
 }
 
 func (a *Account) FindByID(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	ctx, span := jaeger.Span(c.Request().Context())
+	defer span.End()
 
-	account, err := a.AccountRepository.FindByID(c.Request().Context(), uint(id))
+	id, _ := strconv.Atoi(c.Param("id"))
+	account, err := a.AccountRepository.FindByID(ctx, uint(id))
 	if err != nil {
 		c.Logger().Errorf("a.AccountRepository.FindByID failed with %s\n", err.Error())
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -66,10 +72,12 @@ func (a *Account) FindByID(c echo.Context) error {
 }
 
 func (a *Account) FindAll(c echo.Context) error {
+	ctx, span := jaeger.Span(c.Request().Context())
+	defer span.End()
+
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	size, _ := strconv.Atoi(c.QueryParam("size"))
-
-	accounts, err := a.AccountRepository.FindAll(c.Request().Context(), filter.AccountCollection{
+	accounts, err := a.AccountRepository.FindAll(ctx, filter.AccountCollection{
 		Page:     page,
 		Size:     size,
 		Document: c.QueryParam("document_number"),

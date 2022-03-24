@@ -6,6 +6,7 @@ import (
 	"ms/card/pkg/contract"
 	"ms/card/pkg/persistence/entity"
 	"ms/card/pkg/persistence/repository"
+	"ms/card/pkg/telemetry/jaeger"
 	"time"
 )
 
@@ -32,6 +33,9 @@ func NewTransaction(opts TransactionOpts) *Transaction {
 }
 
 func (t *Transaction) Create(ctx context.Context, request *contract.TransactionRequest) (*entity.Transaction, error) {
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
+
 	if err := request.Validate(); err != nil {
 		t.Logger.Errorf("request.Validate() failed with %s\n", err)
 		return nil, err

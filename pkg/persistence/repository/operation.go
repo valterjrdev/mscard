@@ -9,6 +9,7 @@ import (
 	"ms/card/pkg/persistence"
 	"ms/card/pkg/persistence/entity"
 	"ms/card/pkg/persistence/filter"
+	"ms/card/pkg/telemetry/jaeger"
 )
 
 var (
@@ -39,6 +40,9 @@ func NewOperation(logger common.Logger, adapter *gorm.DB) *Operation {
 }
 
 func (a *Operation) Create(ctx context.Context, structure entity.Operation) (*entity.Operation, error) {
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
+
 	tx := a.adapter.WithContext(ctx)
 	if result := tx.Create(&structure); result.Error != nil {
 		a.logger.Errorf("tx.Create() failed with %s\n", result.Error)
@@ -54,8 +58,10 @@ func (a *Operation) Create(ctx context.Context, structure entity.Operation) (*en
 }
 
 func (a *Operation) FindByID(ctx context.Context, id uint) (*entity.Operation, error) {
-	var operation entity.Operation
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
 
+	var operation entity.Operation
 	tx := a.adapter.WithContext(ctx)
 	if result := tx.Select([]string{"id", "description", "debit"}).First(&operation, id); result.Error != nil {
 		a.logger.Errorf("tx.First() failed with %s\n", result.Error)
@@ -70,6 +76,9 @@ func (a *Operation) FindByID(ctx context.Context, id uint) (*entity.Operation, e
 }
 
 func (a *Operation) FindAll(ctx context.Context, filters filter.OperationCollection) ([]*entity.Operation, error) {
+	ctx, span := jaeger.Span(ctx)
+	defer span.End()
+
 	operations := make([]*entity.Operation, 0)
 	tx := a.adapter.WithContext(ctx)
 	find := tx.Scopes(filters.Filter(), persistence.Paginator(filters.Page, filters.Size)).Select([]string{
