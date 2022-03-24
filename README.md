@@ -2,6 +2,8 @@
 
 Card transaction authorizer
 
+**This project is for studies not used in production**
+
 ## Usage
 
 Install Dependencies
