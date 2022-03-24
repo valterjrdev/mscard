@@ -14,7 +14,7 @@ type (
 		Account   uint      `json:"account_id" gorm:"type:integer;column:account_id"`
 		Type      uint      `json:"operation_id" gorm:"type:integer;column:operation_id"`
 		Amount    int64     `json:"amount" gorm:"type:integer;column:amount"`
-		EventDate time.Time `json:"event_date" gorm:"type:timestamp;column:event_date"`
+		CreatedAt time.Time `json:"created_at" gorm:"type:timestamp without time zone;column:created_at"`
 	}
 
 	TransactionCollection struct {

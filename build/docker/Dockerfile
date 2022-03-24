@@ -13,7 +13,8 @@ COPY . .
 RUN go build -o tmp/app cmd/${app}/*.go
 
 FROM alpine:3.15.0
-RUN apk --no-cache add ca-certificates curl
+RUN apk update && apk --no-cache add ca-certificates curl tzdata
+ENV TZ=America/Sao_Paulo
 WORKDIR /workspace
 
 COPY --from=build /workspace/tmp/app .

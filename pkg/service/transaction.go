@@ -66,7 +66,7 @@ func (t *Transaction) Create(ctx context.Context, request *contract.TransactionR
 		Account:   request.Account,
 		Type:      request.Operation,
 		Amount:    amount,
-		EventDate: time.Now(),
+		CreatedAt: time.Now(),
 	})
 
 	if err != nil {

@@ -40,7 +40,7 @@ func TestTransactionRepository_Create(t *testing.T) {
 
 	dbmock.ExpectBegin()
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		INSERT INTO "transaction" ("account_id","operation_id","amount","event_date") 
+		INSERT INTO "transaction" ("account_id","operation_id","amount","created_at") 
 		VALUES ($1,$2,$3,$4) 
 		RETURNING "id"
 	`)).WithArgs(1, 4, 12345, time.Now()).WillReturnRows(
@@ -56,7 +56,7 @@ func TestTransactionRepository_Create(t *testing.T) {
 		Account:   1,
 		Type:      4,
 		Amount:    12345,
-		EventDate: time.Now(),
+		CreatedAt: time.Now(),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, uint(1), transaction.ID)
@@ -100,7 +100,7 @@ func TestTransactionRepository_Create_Persist_Error(t *testing.T) {
 		Account:   1,
 		Type:      4,
 		Amount:    12345,
-		EventDate: time.Now(),
+		CreatedAt: time.Now(),
 	})
 
 	assert.Nil(t, account)
@@ -132,8 +132,8 @@ func TestTransactionRepository_Collection(t *testing.T) {
 	gormdb, err := gorm.Open(postgres.New(postgres.Config{Conn: mockdb}), &gorm.Config{})
 	assert.NoError(t, err)
 
-	dbmock.ExpectQuery(regexp.QuoteMeta(`SELECT "id","account_id","operation_id","amount","event_date" FROM "transaction" LIMIT 10`)).WillReturnRows(
-		sqlmock.NewRows([]string{"id", "account_id", "operation_id", "amount", "event_date"}).
+	dbmock.ExpectQuery(regexp.QuoteMeta(`SELECT "id","account_id","operation_id","amount","created_at" FROM "transaction" LIMIT 10`)).WillReturnRows(
+		sqlmock.NewRows([]string{"id", "account_id", "operation_id", "amount", "created_at"}).
 			AddRow(uint(1), uint(1), uint(1), 1000, time.Now()).
 			AddRow(uint(2), uint(2), uint(2), 1000, time.Now()).
 			AddRow(uint(3), uint(3), uint(3), -100, time.Now()),
@@ -176,7 +176,7 @@ func TestTransactionRepository_Collection_Fetch_Error(t *testing.T) {
 
 	expected := xerrors.New("error fetch collection")
 	dbmock.ExpectQuery(regexp.QuoteMeta(`
-		SELECT "id","account_id","operation_id","amount","event_date" 
+		SELECT "id","account_id","operation_id","amount","created_at" 
 		FROM "transaction" LIMIT 10
 	`)).WillReturnError(expected)
 

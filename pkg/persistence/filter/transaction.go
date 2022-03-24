@@ -7,12 +7,12 @@ import (
 
 type (
 	TransactionCollection struct {
-		Page           int
-		Size           int
-		Account        string
-		Operation      string
-		EventDateStart string
-		EventDateEnd   string
+		Page            int
+		Size            int
+		Account         string
+		Operation       string
+		CreateDateStart string
+		CreateDateEnd   string
 	}
 )
 
@@ -28,11 +28,11 @@ func (t *TransactionCollection) Filter() func(db *gorm.DB) *gorm.DB {
 			db.Where("operation_id = ?", operation)
 		}
 
-		if t.EventDateStart != "" && t.EventDateEnd != "" {
+		if t.CreateDateStart != "" && t.CreateDateEnd != "" {
 			db.Where(
-				"TO_CHAR(event_date, 'YYYY-MM-DD HH24:MI:SS') BETWEEN ? AND ?",
-				t.EventDateStart,
-				t.EventDateEnd,
+				"TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') BETWEEN ? AND ?",
+				t.CreateDateStart,
+				t.CreateDateEnd,
 			)
 		}
 

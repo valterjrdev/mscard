@@ -35,7 +35,7 @@ func TestHandlerTransaction_Create(t *testing.T) {
 		Account:   1,
 		Type:      4,
 		Amount:    10020,
-		EventDate: time.Now(),
+		CreatedAt: time.Now(),
 	}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, AccountCreatePath, strings.NewReader(`{"account_id":1,"operation_id":4,"amount":10020}`))
@@ -47,7 +47,7 @@ func TestHandlerTransaction_Create(t *testing.T) {
 
 	if assert.NoError(t, h.Create(echo.New().NewContext(req, rec))) {
 		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.JSONEq(t, `{"id":1,"account_id":1,"operation_id":4,"amount":10020,"event_date":"2022-03-12T01:02:03.000000004Z"}`, rec.Body.String())
+		assert.JSONEq(t, `{"id":1,"account_id":1,"operation_id":4,"amount":10020,"created_at":"2022-03-12T01:02:03.000000004Z"}`, rec.Body.String())
 	}
 }
 
@@ -115,14 +115,14 @@ func TestHandlerTransaction_FindAll(t *testing.T) {
 				Account:   1,
 				Type:      4,
 				Amount:    -10000,
-				EventDate: time.Now(),
+				CreatedAt: time.Now(),
 			},
 			{
 				ID:        2,
 				Account:   1,
 				Type:      4,
 				Amount:    5000,
-				EventDate: time.Now(),
+				CreatedAt: time.Now(),
 			},
 		},
 	}
@@ -147,8 +147,8 @@ func TestHandlerTransaction_FindAll(t *testing.T) {
 		{
 			"balance": -5000,
 			"data": [
-				{"id":1,"account_id":1,"operation_id":4,"amount":-10000,"event_date":"2022-03-12T01:02:03.000000004Z"},
-				{"id":2,"account_id":1,"operation_id":4,"amount":5000,"event_date":"2022-03-12T01:02:03.000000004Z"}
+				{"id":1,"account_id":1,"operation_id":4,"amount":-10000,"created_at":"2022-03-12T01:02:03.000000004Z"},
+				{"id":2,"account_id":1,"operation_id":4,"amount":5000,"created_at":"2022-03-12T01:02:03.000000004Z"}
 			]
 		}
 		`, rec.Body.String())

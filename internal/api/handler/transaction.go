@@ -48,16 +48,16 @@ func (t *Transaction) Create(c echo.Context) error {
 func (t *Transaction) FindAll(c echo.Context) error {
 	page, _ := strconv.Atoi(c.QueryParam("page"))
 	size, _ := strconv.Atoi(c.QueryParam("size"))
-	eventDateStart := c.QueryParam("eventDateStart")
-	eventDateEnd := c.QueryParam("eventDateEnd")
+	createDateStart := c.QueryParam("createDateStart")
+	createDateEnd := c.QueryParam("createDateEnd")
 
 	collection, err := t.TransactionRepository.FindAll(c.Request().Context(), filter.TransactionCollection{
-		Page:           page,
-		Size:           size,
-		Account:        c.QueryParam("account_id"),
-		Operation:      c.QueryParam("operation_id"),
-		EventDateStart: eventDateStart,
-		EventDateEnd:   eventDateEnd,
+		Page:            page,
+		Size:            size,
+		Account:         c.QueryParam("account_id"),
+		Operation:       c.QueryParam("operation_id"),
+		CreateDateStart: createDateStart,
+		CreateDateEnd:   createDateEnd,
 	})
 	if err != nil {
 		c.Logger().Errorf("t.TransactionRepository.FindAll failed with %s\n", err.Error())

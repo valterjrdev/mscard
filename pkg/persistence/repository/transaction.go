@@ -51,7 +51,7 @@ func (a *Transaction) FindAll(ctx context.Context, filters filter.TransactionCol
 		"account_id",
 		"operation_id",
 		"amount",
-		"event_date",
+		"created_at",
 	}).Find(&transactions)
 
 	collection := &entity.TransactionCollection{Data: transactions}

@@ -153,11 +153,11 @@ paths:
           schema:
             type: string
         - in: query
-          name: eventDateStart
+          name: createDateStart
           schema:
             type: string
         - in: query
-          name: eventDateEnd
+          name: createDateEnd
           schema:
             type: string
       responses:
@@ -305,7 +305,7 @@ definitions:
         format: "uint"
       amount:
         type: "number"
-      event_date:
+      created_at:
         type: "string"
   TransactionCollection:
     type: "object"
